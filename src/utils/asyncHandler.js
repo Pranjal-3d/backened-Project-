@@ -4,7 +4,7 @@ const asyncHandler =(requestHandler)=>{
     }
 }
 
-
+//basically express cannot see the error causing in async await so this async handler see the error in async and send to the express this is function of asyncHandler
 
 
 export {asyncHandler}

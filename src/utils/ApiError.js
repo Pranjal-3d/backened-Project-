@@ -22,3 +22,5 @@ class ApiError extends Error{
     }
 }
 export {ApiError}
+
+//ApiError is used to send clean, meaningful error messages from backend to frontend.

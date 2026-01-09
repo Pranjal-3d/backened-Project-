@@ -6,3 +6,4 @@ class ApiResponse{
         this.success=statusCode<400
     }
 }
+//API response is the answer your backend sends back to the frontend.
