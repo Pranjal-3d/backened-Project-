@@ -1,4 +1,4 @@
-import {v2 as clodinary } from "clodinary"
+
 import fs from "fs"
 
 import { v2 as cloudinary } from 'cloudinary';
