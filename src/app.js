@@ -22,10 +22,17 @@ app.get("/",(req,res)=>{
 //routes
 import userRouter from'./routes/user.routes.js'
 import router from "./routes/user.routes.js"
+// import { loginUser } from "./controllers/user.controller.js"
+// import { loggedOut } from "./controllers/user.controller.js"
+// import { registerUser } from "./controllers/user.controller.js"
 
 //routes declare 
 
 app.use("/api/v1/users",userRouter)
+// app.use("/api/v1/auth",registerUser)
+// app.use("/api/v1/signIn",loginUser)
+// app.use("/api/v1/signout",loggedOut)
+
 export default app
 
 //cookie parser conver the raw string into js so that it is readable by express

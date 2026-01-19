@@ -9,6 +9,6 @@ const Storage=multer.diskStorage({
 })
 
 export const upload=multer({
-    Storage,    
+    storage: Storage,    
 })
 //multer is used for file destination uploading and filename 

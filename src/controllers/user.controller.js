@@ -4,6 +4,23 @@ import { User } from "../models/user.modal.js";
 import { uploadOnCloudinary } from "../utils/clodinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
+const generateAccessAndRefreshTokens=async(userId)=>{
+  try{
+      const user=await User.findById(userId) //for generating the token first we have to find the user
+      const accessToken= user.generateAccessToken()//it save in browser for if i login previously so next time you will be login 
+      const refreshToken=user.generateRefreshToken()
+
+      user.refreshToken=refreshToken
+      await user.save({validateBeforeSave:false})//we have use the validateBeforedave bacause save function password rrquired before here password is not there so false
+
+      return {accessToken,refreshToken}
+
+  }
+  catch(error){
+    throw new ApiError(500,"something went wrong while generating refresh and access token")
+  }
+}
 // for registration success full firstly we need to take the data validate it then store it to mongodb and responses to client that successful register
 const registerUser=asyncHandler( async(req,res)=>{
     //get user details from frontened
@@ -76,5 +93,62 @@ const registerUser=asyncHandler( async(req,res)=>{
   )
 
 })
+const loginUser=asyncHandler(async(req,res)=>
+  
+  {
 
-export {registerUser}
+
+// user detail from frontened 
+//username or email 
+//find the user
+//uer password and email will be match from the database means both refreshtoken will match from the database
+//send cookies and send response 
+    const {email,username,password}=req.body
+
+    if(!username||!email){
+      throw new ApiError(400,"username or password is required")
+    }
+
+    const user=await User.findOne({
+      $or:[{username},{email}]
+    })
+    if(!user){
+      throw new ApiError(400,"User is not registered ")
+    }
+
+    const isPasswordValid=await user.isPasswordCorrect(password)
+
+    if(!isPasswordValid){
+      throw new ApiError(400,"Invalid user credentials")
+    }
+    const {accessToken,refreshToken}=await generateAccessAndRefreshTokens(user._id)
+
+    const loggedInUser=await User.findById(user._id).select("-password -refreshToken")
+
+    const options={
+      httpOnly:true,
+      secure:true
+    }
+
+    return res
+    .status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user:loggedInUser,accessToken,
+          refreshToken
+
+        },
+        "User logged in successfully"
+      )
+    )
+})
+
+const loggedOut=asyncHandler(async(req,res)=>{
+  
+})
+
+export {registerUser,loginUser,loggedOut}
